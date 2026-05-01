@@ -1,0 +1,9 @@
+- CRUD para guardar receitas do usuário de forma privada
+- Filtro de ingredientes disponíveis
+- Substituições de ingredientes
+- Calculadora de porção dinâmica
+- Dificuldade Realista
+- Comunidade para divulgação de alimentos e entreterimento, além de desafios diários para incentivar a comunidade
+- Gamificação por técnica, focada em maestria nas habilidades da cozinha, como corte com faca por exemplo
+- Inventário de ingredientes do usuário e pro auxílio da IA na busca de receitas
+- Ferramenta que auxilia a preparar receitas com integração com IA, de forma que ela organize a receita para ser feita de forma instrutiva (será pago)
