@@ -1,3 +1,6 @@
+Resumo:
+É uma plataforma híbrida que transforma a cozinha em uma experiência social e tecnológica, funcionando como um ponto de encontro para jovens que encaram a culinária como hobby, estilo de vida ou necessidade de economia. A ideia central é substituir o tradicional e estático livro de receitas por uma rede social vibrante, onde os usuários não apenas publicam e salvam seus pratos, mas interagem através de desafios comunitários e sistemas de gamificação que validam o progresso de cada um. Além da parte social, o software atua como um assistente inteligente de alta utilidade, oferecendo ferramentas práticas como a busca de receitas por ingredientes disponíveis na geladeira, o cálculo automático de porções para diferentes números de convidados e recursos interativos que facilitam o preparo em tempo real. No fim das contas, o app conecta a validação social e o entretenimento das redes modernas com a funcionalidade de um organizador eficiente, ajudando o público jovem a dominar a cozinha, economizar dinheiro e compartilhar suas conquistas com uma comunidade que fala a mesma língua.
+
 - CRUD para guardar receitas do usuário de forma privada
 - Filtro de ingredientes disponíveis
 - Substituições de ingredientes
