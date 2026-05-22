@@ -79,3 +79,55 @@ Para validar as principais engrenagens do sistema, siga estes passos:
 ## ✒️ Licença
 
 Este projeto foi desenvolvido para fins demonstrativos e educacionais de uma interface de utilizador (UI/UX) avançada para a Culinária 3.0. Sinta-se à vontade para expandir, conectar a APIs reais de Inteligência Artificial ou utilizar como base para o seu portefólio!
+Aqui está o guia passo a passo em formato de texto simples, ideal para enviar diretamente para as pessoas que vão testar o sistema.
+
+---
+
+### Guia de Teste - cozinhe.me
+
+Este e um guia rápido para testar as principais funções da plataforma. Como o aplicativo foi desenvolvido em um único arquivo web, tudo roda direto no seu navegador de internet, sem necessidade de instalar nada.
+
+#### Passo 1: Abrir o Aplicativo
+
+1. Localize o arquivo "cozinhe_me_app.html" no seu computador.
+2. Clique duas vezes sobre o arquivo (ou arraste-o para dentro do seu navegador de internet, como Google Chrome, Microsoft Edge, Firefox ou Safari).
+3. A tela inicial de autenticação será exibida, solicitando que você entre ou crie uma conta.
+
+#### Passo 2: Criar uma Conta (Primeiro Acesso)
+
+Como o histórico do seu navegador está vazio, primeiro e necessário fazer um cadastro para simular o banco de dados.
+
+1. Na janela central, clique na aba "Criar Conta".
+2. Preencha os três campos: digite o seu nome, um e-mail fictício e crie uma senha qualquer.
+3. Clique no botão "Criar Minha Conta".
+4. O sistema vai validar o acesso, a tela de cadastro vai sumir e uma mensagem de boas-vindas aparecerá no canto inferior direito. O seu nome também será atualizado no menu lateral.
+
+#### Passo 3: Navegar pelas Telas
+
+A plataforma funciona em uma arquitetura de página única, onde as seções mudam instantaneamente.
+
+1. Clique nos botões do menu lateral esquerdo: Início, Receitas, Inventário, IA Chef, Comunidade e Conquistas.
+2. Note que a troca de telas e imediata e não exige nenhum carregamento de página.
+
+#### Passo 4: Testar a Roleta Diária (Na Tela Início)
+
+1. Clique no botão "Início" no menu lateral.
+2. Localize o painel da roleta e clique no botão "Girar Roleta Diária".
+3. Aguarde a animação terminar para ver a simulação do bônus diário recebido.
+
+#### Passo 5: Testar o Controle de Porções (Na Tela Receitas)
+
+1. Clique no botão "Receitas" no menu lateral.
+2. Clique na receita disponível para abrir os detalhes.
+3. Localize o controle de porções (onde há os botões de "+" e "-").
+4. Clique em "+" ou "-" e observe que a quantidade de cada ingrediente e recalculada e atualizada na tela de forma automática e proporcional.
+
+#### Passo 6: Testar a Validação de Login (Histórico do Navegador)
+
+Para garantir que o sistema salvou os seus dados de acesso:
+
+1. Copie o endereço completo que aparece na barra de URL do seu navegador (o link que começa com "file:///...").
+2. Abra uma Nova Janela Anônima no seu navegador.
+3. Cole o endereço copiado e dê Enter. A tela de login aparecerá novamente.
+4. Mantenha na aba "Entrar" e digite exatamente o mesmo e-mail e a mesma senha que você criou no Passo 2.
+5. Clique em "Entrar na Cozinha". O sistema buscará as informações gravadas na sessão e liberará o seu acesso com o seu perfil salvo.
