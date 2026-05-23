@@ -9,55 +9,16 @@ let state = {
   wheelSpunToday: false, postStar: 5, activeLang: 'pt',
   voiceRecording: false, recognition: null,
   lastTranscribed: null, lastVoiceRecipe: null,
-  invFilter: ''
+  invFilter: '',
+  activeTimer: null
 };
 
 /* ════════════════════════════════════════
    INITIAL DATA
 ════════════════════════════════════════ */
-state.recipes = [
-  {id:1, name:"Frango ao Limão", emoji:"🍋", time:25, diff:"Fácil", cat:"Almoço", creator:false, creatorName:null,
-   ings:["180g · Peito de frango","2 dentes · Alho","30ml · Suco de limão","10ml · Azeite","1 pitada · Sal e pimenta","1 · Ramo de alecrim"],
-   steps:["Tempere o frango com sal, pimenta e alecrim. Deixe marinar 10 min.","Aqueça o azeite em frigideira em fogo médio.","Doure o alho laminado por 1 minuto até dourar.","Sele o frango 4 min de cada lado até dourar.","Adicione o suco de limão e reduza por 2 min. Sirva."],
-   notes:"Fogo médio garante carne suculenta. Limão siciliano dá mais aroma.",
-   portions:1},
-  {id:2, name:"Pasta Alho e Óleo", emoji:"🍝", time:18, diff:"Fácil", cat:"Jantar", creator:true, creatorName:"Chef Marco",
-   ings:["100g · Espaguete","3 dentes · Alho","30ml · Azeite extra virgem","0.5 col. chá · Pimenta calabresa","5g · Salsinha fresca","1 pitada · Sal"],
-   steps:["Ferva água com sal. Cozinhe espaguete al dente (8 min).","Reserve 50ml da água do cozimento.","Fatie o alho fino. Doure no azeite por 2 min.","Adicione pimenta calabresa.","Misture a pasta com o alho, a água reservada e salsinha picada."],
-   notes:"A água do cozimento emulsifica o azeite e cria o molho perfeito.",
-   portions:1},
-  {id:3, name:"Risoto de Cogumelos", emoji:"🍄", time:35, diff:"Médio", cat:"Jantar", creator:false, creatorName:null,
-   ings:["80g · Arroz arbóreo","100g · Cogumelos frescos","400ml · Caldo de legumes","0.5 · Cebola","1 dente · Alho","20g · Parmesão ralado","10g · Manteiga","50ml · Vinho branco"],
-   steps:["Refogue cebola e alho na manteiga até transparente.","Adicione cogumelos e refogue 3 min.","Adicione o arroz e frite por 2 min.","Regue com vinho branco e misture.","Adicione caldo quente aos poucos (2 conchas por vez), mexendo sempre.","Finalize com parmesão e ajuste o sal."],
-   notes:"Mexa constantemente e adicione caldo sempre quente.",
-   portions:1},
-  {id:4, name:"Omelete de Queijo", emoji:"🥚", time:10, diff:"Fácil", cat:"Café da manhã", creator:false, creatorName:null,
-   ings:["2 · Ovos","30g · Queijo muçarela","3g · Salsinha","5g · Manteiga","1 pitada · Sal"],
-   steps:["Bata os ovos com sal e salsinha picada.","Derreta manteiga em frigideira antiaderente em fogo médio-baixo.","Despeje os ovos. Não mexa — deixe a base firmar.","Distribua o queijo. Dobre ao meio e sirva."],
-   notes:"Fogo baixo é o segredo. Alta temperatura resseca os ovos.",
-   portions:1},
-];
-
-state.inventory = [
-  {id:1,name:"Tomate",emoji:"🍅",qty:"500g",expiry:"2025-06-01"},
-  {id:2,name:"Frango",emoji:"🍗",qty:"400g",expiry:"2025-05-25"},
-  {id:3,name:"Alho",emoji:"🧄",qty:"1 cabeça",expiry:"2025-07-01"},
-  {id:4,name:"Cebola",emoji:"🧅",qty:"3 unid",expiry:"2025-07-15"},
-  {id:5,name:"Ovos",emoji:"🥚",qty:"6 unid",expiry:"2025-06-10"},
-  {id:6,name:"Espaguete",emoji:"🍝",qty:"200g",expiry:"2025-12-01"},
-  {id:7,name:"Azeite",emoji:"🫙",qty:"250ml",expiry:"2025-11-01"},
-  {id:8,name:"Arroz",emoji:"🍚",qty:"300g",expiry:"2025-10-01"},
-  {id:9,name:"Limão",emoji:"🍋",qty:"3 unid",expiry:"2025-05-28"},
-  {id:10,name:"Manteiga",emoji:"🧈",qty:"100g",expiry:"2025-06-15"},
-  {id:11,name:"Queijo",emoji:"🧀",qty:"150g",expiry:"2025-05-30"},
-  {id:12,name:"Cogumelos",emoji:"🍄",qty:"200g",expiry:"2025-05-24"},
-];
-
-state.posts = [
-  {id:1,user:"Ana Lima",avatar:"👩",recipe:"Risoto de Cogumelos",text:"Ficou incrível! Segui a dica do parmesão no final — diferença absurda 🤌",likes:14,liked:false,stars:5,time:"há 2h"},
-  {id:2,user:"Pedro Alves",avatar:"🧑",recipe:"Pasta Alho e Óleo",text:"Nunca tinha feito massa do zero. A receita do Chef Marco é perfeita pra iniciantes!",likes:8,liked:false,stars:4,time:"há 5h"},
-  {id:3,user:"Chef Marco",avatar:"👨‍🍳",recipe:"Pasta Alho e Óleo",text:"Nova receita no ar! Testei com azeite português e ficou de outro nível 🇵🇹",likes:31,liked:false,stars:5,time:"há 1d",isCreator:true},
-];
+state.recipes = [];
+state.inventory = [];
+state.posts = [];
 
 state.missions = [
   {id:1,icon:"🔪",name:"Mestre dos Cortes",desc:"Complete uma receita usando brunoise",xp:80,done:false},
@@ -87,21 +48,7 @@ state.achievements = [
   {icon:"🤖",label:"IA Mestre",color:"blue",unlocked:false},
 ];
 
-const MISE_DATA = [
-  {name:"Frango ao Limão",totalMin:25,stations:[
-    {label:"Fogão",color:"fogao",tasks:[{text:"Aqueça azeite",start:0,dur:4},{text:"Doure alho [1min]",start:4,dur:3},{text:"Sele frango [4min/lado]",start:7,dur:9},{text:"Finalize c/ limão",start:16,dur:6}]},
-    {label:"Tábua",color:"tabua",tasks:[{text:"Tempere o frango",start:0,dur:4},{text:"Fatie alho",start:4,dur:3},{text:"Esprema limões",start:11,dur:3}]},
-    {label:"Arroz",color:"prep",tasks:[{text:"Inicie o arroz",start:2,dur:18}]},
-  ]},
-  {name:"Pasta Alho e Óleo",totalMin:20,stations:[
-    {label:"Fogão",color:"fogao",tasks:[{text:"Ferva água c/ sal",start:0,dur:7},{text:"Cozinhe espaguete",start:7,dur:9},{text:"Doure alho no azeite",start:10,dur:3},{text:"Misture tudo",start:16,dur:4}]},
-    {label:"Tábua",color:"tabua",tasks:[{text:"Fatie alho fino",start:1,dur:3},{text:"Pique salsinha",start:13,dur:3}]},
-  ]},
-  {name:"Omelete de Queijo",totalMin:12,stations:[
-    {label:"Fogão",color:"fogao",tasks:[{text:"Derreta manteiga",start:0,dur:2},{text:"Despeje ovos",start:2,dur:5},{text:"Adicione queijo e dobre",start:7,dur:3}]},
-    {label:"Bowl",color:"tabua",tasks:[{text:"Bata ovos c/ sal",start:0,dur:3},{text:"Rale queijo",start:1,dur:2}]},
-  ]},
-];
+const MISE_DATA = [];
 
 const WHEEL_PRIZES = [
   {label:"1 Mês Premium",color:"#B8860B",icon:"⭐",desc:"1 mês de acesso Premium gratuito!",premium:true},
@@ -203,14 +150,21 @@ function renderRecipes(){
   document.getElementById('recipeFilters').innerHTML = CATS.map(c=>`
     <div class="filter-chip ${activeFilter===c?'active':''}" onclick="setRecipeFilter('${c}')">${c}</div>
   `).join('');
+  
   const q = (document.getElementById('recipeSearch')?.value||'').toLowerCase();
-  let list = state.recipes;
-  if(activeFilter!=="Todos") list = list.filter(r=>r.cat===activeFilter);
-  if(q) list = list.filter(r=>r.name.toLowerCase().includes(q));
-  if(inventoryFilter){
-    const invNames = state.inventory.map(i=>i.name.toLowerCase());
-    list = list.filter(r=>r.ings.some(ing=>invNames.some(n=>ing.toLowerCase().includes(n))));
-  }
+  const invNames = inventoryFilter ? state.inventory.map(i=>i.name.toLowerCase()) : [];
+
+  // Otimização: Filtragem em um único passo O(n)
+  const list = state.recipes.filter(r => {
+    const matchCat = activeFilter === "Todos" || r.cat === activeFilter;
+    const matchSearch = !q || r.name.toLowerCase().includes(q);
+    let matchInv = true;
+    if (inventoryFilter) {
+      matchInv = r.ings.some(ing => invNames.some(n => ing.toLowerCase().includes(n)));
+    }
+    return matchCat && matchSearch && matchInv;
+  });
+
   document.getElementById('recipeGrid').innerHTML = list.map(r=>`
     <div class="recipe-card" onclick="openRecipeDetail(${r.id})">
       <div class="recipe-card-thumb">
@@ -234,7 +188,12 @@ function renderRecipes(){
 }
 
 function setRecipeFilter(cat){ activeFilter=cat; renderRecipes(); }
-function filterRecipes(){ renderRecipes(); }
+
+let recipeTimeout;
+function filterRecipes(){ 
+  clearTimeout(recipeTimeout);
+  recipeTimeout = setTimeout(() => renderRecipes(), 250); 
+}
 function filterByInventory(){ inventoryFilter=!inventoryFilter; renderRecipes(); }
 
 function openRecipeDetail(id){
@@ -419,15 +378,19 @@ function completeCreatorRecipe(id){
 /* ════════════════════════════════════════
    INVENTÁRIO
 ════════════════════════════════════════ */
+const TODAY_CACHE = new Date(); // Cache da data para evitar múltiplas instanciações
+
 function renderInventory(){
   const q = (state.invFilter||'').toLowerCase();
-  const today = new Date();
   const banner = document.getElementById('expirySoonBanner');
+  
+  // Otimização de busca e categorização
   const expiring = state.inventory.filter(i=>{
     if(!i.expiry) return false;
-    const diff = (new Date(i.expiry)-today)/(1000*60*60*24);
+    const diff = (new Date(i.expiry) - TODAY_CACHE) / 86400000;
     return diff<=3 && diff>=0;
   });
+
   if(expiring.length>0){
     banner.style.display='block';
     banner.innerHTML = `<div style="font-weight:600;color:var(--amber);margin-bottom:.4rem">⚠️ ${expiring.length} item(s) vencem em breve:</div>${expiring.map(i=>`<span class="tag tag-amber" style="margin-right:.4rem">${i.emoji} ${i.name} (${i.expiry})</span>`).join('')}<br><button class="btn btn-outline btn-sm" style="margin-top:.6rem" onclick="findRecipesFromInventory()">Usar agora com IA</button>`;
@@ -436,7 +399,7 @@ function renderInventory(){
   let list = state.inventory;
   if(q) list = list.filter(i=>i.name.toLowerCase().includes(q));
   document.getElementById('inventoryGrid').innerHTML = list.map(i=>{
-    const expStatus = getExpiryStatus(i.expiry, today);
+    const expStatus = getExpiryStatus(i.expiry, TODAY_CACHE);
     return `<div class="inv-item">
       <button class="inv-del" onclick="deleteInvItem(${i.id})">✕</button>
       <div class="inv-emoji">${i.emoji||'📦'}</div>
@@ -456,19 +419,47 @@ function getExpiryStatus(expiry, today){
   return {cls:'expiry-ok',label:`OK (${expiry})`};
 }
 
-function filterInventory(){ state.invFilter=document.getElementById('invSearch').value; renderInventory(); }
+let invTimeout;
+function filterInventory(){ 
+  clearTimeout(invTimeout);
+  invTimeout = setTimeout(() => { state.invFilter=document.getElementById('invSearch').value; renderInventory(); }, 250);
+}
 
 function openInvModal(){
   ['inv-name','inv-qty','inv-emoji','inv-expiry'].forEach(id=>document.getElementById(id).value='');
   openModal('invModal');
 }
-function saveInventoryItem(){
+async function saveInventoryItem(){
   const name = document.getElementById('inv-name').value.trim();
+  const qty = document.getElementById('inv-qty').value || '1 unid';
+  const exp = document.getElementById('inv-expiry').value || '';
+  const emoji = document.getElementById('inv-emoji').value || '📦';
+
   if(!name){ showToast('⚠️','Informe o ingrediente'); return; }
-  state.inventory.push({id:Date.now(), name, qty:document.getElementById('inv-qty').value||'1 unid', emoji:document.getElementById('inv-emoji').value||'📦', expiry:document.getElementById('inv-expiry').value||''});
-  closeModal('invModal'); renderInventory();
-  document.getElementById('heroIngCount').textContent = state.inventory.length+' ingredientes';
-  showToast('🧺','Item adicionado ao inventário!');
+
+  try {
+    const response = await fetch('index.php?acao=adicionar_ingrediente', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome_ingrediente: name,
+        quantidade: qty,
+        data_vencimento: exp
+      })
+    });
+    const res = await response.json();
+
+    if (res.sucesso) {
+      state.inventory.push({id:Date.now(), name, qty, emoji, expiry: exp});
+      closeModal('invModal'); renderInventory();
+      document.getElementById('heroIngCount').textContent = state.inventory.length+' ingredientes';
+      showToast('🧺', res.mensagem || 'Item adicionado ao inventário!');
+    } else {
+      showToast("❌", res.mensagem);
+    }
+  } catch (error) {
+    showToast("❌", "Erro ao conectar com o servidor.");
+  }
 }
 function deleteInvItem(id){ state.inventory=state.inventory.filter(i=>i.id!==id); renderInventory(); }
 
@@ -1023,11 +1014,12 @@ function resetMise(){
    TIMER
 ════════════════════════════════════════ */
 function startTimer(minutes){
+  if(state.activeTimer) clearInterval(state.activeTimer);
   let secs = minutes*60;
   showToast('⏱️',`Timer de ${minutes}min iniciado!`);
-  const id = setInterval(()=>{
+  state.activeTimer = setInterval(()=>{
     secs--;
-    if(secs<=0){ clearInterval(id); showToast('🔔',`Timer de ${minutes}min finalizado!`); }
+    if(secs<=0){ clearInterval(state.activeTimer); state.activeTimer = null; showToast('🔔',`Timer de ${minutes}min finalizado!`); }
   },1000);
 }
 
@@ -1052,12 +1044,56 @@ function showToast(icon, msg){
   setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),400); },3500);
 }
 
+function realizarCadastroNoPHP() {
+  const nome = document.getElementById('reg-nome').value;
+  const email = document.getElementById('reg-email').value;
+  const senha = document.getElementById('reg-senha').value;
+  const dados = { nome, email, senha, avatar: '🧑' };
+
+  fetch('index.php?acao=registar_utilizador', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados)
+  })
+  .then(res => res.json())
+  .then(resposta => {
+    if (resposta.sucesso) {
+      showToast('🎉', resposta.mensagem);
+      ['reg-nome', 'reg-email', 'reg-senha'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      closeModal('cadastroModal');
+    } else {
+      showToast('❌', resposta.mensagem);
+    }
+  })
+  .catch(error => showToast('❌', 'Erro de conexão com o servidor.'));
+}
+
+function carregarInventarioDoBanco() {
+  fetch('index.php?acao=listar_inventario')
+    .then(res => res.json())
+    .then(dados => {
+      if (Array.isArray(dados)) {
+        state.inventory = dados.map(item => ({
+          id: item.id || Date.now() + Math.random(),
+          name: item.nome_ingrediente,
+          qty: item.quantidade,
+          expiry: item.data_vencimento,
+          emoji: '📦'
+        }));
+        renderInventory();
+      }
+    })
+    .catch(err => console.error("Erro ao carregar inventário:", err));
+}
+
 /* ════════════════════════════════════════
    INIT
 ════════════════════════════════════════ */
 renderHome();
 renderRecipes();
-renderInventory();
+carregarInventarioDoBanco();
 renderCommunity();
 renderGamePage();
 updateLevelUI();

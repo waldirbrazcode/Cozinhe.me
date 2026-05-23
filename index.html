@@ -1,1 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cozinhe.me</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">cozinhe<span>.</span>me</div>
+    <div class="logo-sub">Culinária 3.0</div>
+  </div>
+  <nav>
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" onclick="goTo('home')"><span class="ni">🏠</span><span>Início</span></div>
+      <div class="nav-item" onclick="goTo('recipes')"><span class="ni">📖</span><span>Receitas</span></div>
+      <div class="nav-item" onclick="goTo('inventory')"><span class="ni">🧺</span><span>Inventário</span></div>
+      <div class="nav-item" onclick="goTo('ai-prep')"><span class="ni">🤖</span><span>IA Chef</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Social</div>
+      <div class="nav-item" onclick="goTo('community')"><span class="ni">👥</span><span>Comunidade</span></div>
+      <div class="nav-item" onclick="goTo('gamification')"><span class="ni">🏆</span><span>Conquistas</span></div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Conta</div>
+      <div class="nav-item" onclick="goTo('premium')"><span class="ni">⭐</span><span>Premium</span></div>
+    </div>
+    <div class="nav-item" onclick="openModal('cadastroModal')"><span class="ni">🧑</span><span>Criar Conta</span></div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-chip">
+      <div class="user-avatar">👨‍🍳</div>
+      <div>
+        <div class="user-info-name" id="sideUserName">Lucas</div>
+        <div class="user-info-level" id="sideUserLevel">Nível 3 · 340 XP</div>
+      </div>
+    </div>
+    <div class="premium-badge-side" onclick="goTo('premium')">⭐ <span>Upgrade Premium</span></div>
+  </div>
+</aside>
 
+<!-- ════ MAIN ════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Início</div>
+    <div class="topbar-actions">
+      <div class="streak-pill" onclick="openWheelModal()">🔥 <span id="streakCount">5</span> dias · Girar Roleta</div>
+      <div class="xp-pill">⚡ <span id="topXP">340</span> XP</div>
+    </div>
+  </div>
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="page-home">
+    <div class="home-hero">
+      <div class="home-hero-title">Olá, Lucas! 👨‍🍳</div>
+      <div class="home-hero-sub">Você tem <strong id="heroIngCount">12 ingredientes</strong> no inventário. A IA encontrou <strong>8 receitas</strong> que você consegue fazer agora.</div>
+      <div class="home-hero-actions">
+        <button class="btn" onclick="goTo('recipes')">🔍 Encontrar Receita</button>
+        <button class="daily-wheel-cta" onclick="openWheelModal()">🎰 Girar Roleta Diária</button>
+        <button class="btn" style="background:rgba(255,255,255,.15)" onclick="goTo('ai-prep')">🤖 IA Chef</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-icon">📖</div><div class="stat-num" id="statRecipes">24</div><div class="stat-lbl">Receitas criadas</div></div>
+      <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-num" id="statStreak">5</div><div class="stat-lbl">Dias seguidos</div></div>
+      <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-num" id="statXP">340</div><div class="stat-lbl">XP total</div></div>
+      <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-num">7</div><div class="stat-lbl">Conquistas</div></div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="section-label">Sugestões de hoje</div>
+        <div id="homeRecipeList"></div>
+      </div>
+      <div>
+        <div class="section-label">Atividade da Comunidade</div>
+        <div id="homeCommunityFeed"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RECEITAS ── -->
+  <div class="page" id="page-recipes">
+    <div id="recipes-list-view">
+      <h2 class="page-title">Receitas</h2>
+      <p class="page-sub">Crie, descubra e adapte receitas do seu jeito</p>
+      <div class="recipe-search-bar">
+        <input class="input" style="max-width:280px" id="recipeSearch" placeholder="Buscar receitas..." oninput="filterRecipes()">
+        <button class="btn btn-sage" onclick="openRecipeModal()">+ Nova Receita</button>
+        <button class="btn btn-outline" onclick="filterByInventory()">🧺 Só do inventário</button>
+      </div>
+      <div class="recipe-filters" id="recipeFilters"></div>
+      <div class="recipe-grid" id="recipeGrid"></div>
+    </div>
+    <div id="recipes-detail-view" class="recipe-detail">
+      <div class="recipe-detail-back" onclick="closeRecipeDetail()">← Voltar</div>
+      <div id="recipeDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- ── INVENTÁRIO ── -->
+  <div class="page" id="page-inventory">
+    <h2 class="page-title">Meu Inventário</h2>
+    <p class="page-sub">Gerencie o que tem em casa — a IA usará isso para sugerir receitas</p>
+    <div style="display:flex;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap">
+      <button class="btn" onclick="openInvModal()">+ Adicionar Item</button>
+      <button class="btn btn-outline" onclick="findRecipesFromInventory()">🔍 Buscar receitas com IA</button>
+      <div class="input" style="max-width:220px;padding:.55rem 1rem"><input style="background:none;border:none;outline:none;width:100%;font-family:Sora,sans-serif;font-size:.84rem" placeholder="Buscar ingrediente..." id="invSearch" oninput="filterInventory()"></div>
+    </div>
+    <div id="expirySoonBanner" style="display:none" class="card" style="border-color:rgba(201,123,10,.3);background:rgba(201,123,10,.07);margin-bottom:1rem"></div>
+    <div class="inventory-grid" id="inventoryGrid"></div>
+  </div>
+
+  <!-- ── IA CHEF ── -->
+  <div class="page" id="page-ai-prep">
+    <h2 class="page-title">🤖 IA Chef</h2>
+    <p class="page-sub">Ferramentas inteligentes para preparar receitas do seu jeito</p>
+    <div class="ai-prep-tabs">
+      <button class="ai-tab active" onclick="switchAITab('url')">📹 URL de Vídeo</button>
+      <button class="ai-tab" onclick="switchAITab('voice')">🎤 Voz</button>
+      <button class="ai-tab" onclick="switchAITab('mise')">⏱️ Mise en Place</button>
+      <button class="ai-tab" onclick="switchAITab('translate')">🌐 Traduzir</button>
+      <button class="ai-tab" onclick="switchAITab('suggest')">💡 Sugerir do Inventário</button>
+    </div>
+
+    <!-- URL TAB -->
+    <div id="ai-tab-url" class="fade-in">
+      <div class="card">
+        <div class="section-label">Transcrever receita de vídeo</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;font-weight:300">Cole a URL de um vídeo do YouTube ou outro site e a IA extrai a receita completa.</p>
+        <div style="display:flex;gap:.7rem;margin-bottom:1rem">
+          <input class="input" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." style="flex:1">
+          <button class="btn btn-amber" onclick="transcribeVideo()">Transcrever</button>
+        </div>
+        <div id="urlResult" class="ai-result-box" style="display:none"></div>
+        <div id="urlSaveBtn" style="display:none;margin-top:.8rem">
+          <button class="btn btn-sage" onclick="saveTranscribedRecipe()">💾 Salvar como receita</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VOICE TAB -->
+    <div id="ai-tab-voice" style="display:none" class="fade-in">
+      <div class="card">
+        <div class="section-label">Ditar ingredientes ou receita por voz</div>
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;font-weight:300">Clique em gravar e fale os ingredientes. A IA organiza em forma de receita.</p>
+        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap">
+          <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎤 Iniciar Gravação</button>
+          <div id="voiceStatus" style="font-size:.82rem;color:var(--muted)">Aguardando...</div>
+        </div>
+        <div id="voiceTranscript" style="background:rgba(59,74,44,.04);border:1.5px solid var(--border);border-radius:12px;padding:1rem;min-height:80px;font-size:.88rem;line-height:1.7;color:var(--muted);font-style:italic">O que você disser aparecerá aqui...</div>
+        <div id="voiceResult" class="ai-result-box" style="display:none;margin-top:1rem"></div>
+        <div id="voiceSaveBtn" style="display:none;margin-top:.8rem">
+          <button class="btn btn-sage" onclick="saveVoiceRecipe()">💾 Salvar receita</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MISE EN PLACE TAB -->
+    <div id="ai-tab-mise" style="display:none" class="fade-in">
+      <div class="card" style="margin-bottom:1rem">
+        <div class="section-label">Selecionar receita</div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+          <select class="input" id="miseRecipeSelect" style="max-width:260px" onchange="loadMiseRecipe()"></select>
+          <button class="btn btn-outline" onclick="generateMiseAI()">✨ Gerar com IA</button>
+        </div>
+      </div>
+      <div class="mise-board" id="miseBoard">
+        <div class="mise-header-bar">
+          <div class="mise-header-title" id="miseTitle">Selecione uma receita acima</div>
+          <div class="mise-time" id="miseTimeLabel"></div>
+        </div>
+        <div class="mise-track" id="miseTrack"></div>
+        <div id="miseActiveBubble" style="display:none;margin:0 1.2rem .5rem;background:rgba(74,122,92,.1);border:1px solid rgba(74,122,92,.25);border-radius:10px;padding:.7rem 1rem;font-size:.83rem;color:var(--olive)"></div>
+        <div class="mise-progress"><div class="mise-progress-fill" id="miseProgressFill" style="width:0%"></div></div>
+        <div class="mise-footer">
+          <button class="btn btn-outline btn-sm" onclick="resetMise()">↺ Reiniciar</button>
+          <button class="btn btn-sm" onclick="miseNextTask()">Próxima →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSLATE TAB -->
+    <div id="ai-tab-translate" style="display:none" class="fade-in">
+      <div class="card">
+        <div class="section-label">Idioma de saída</div>
+        <div class="lang-selector" id="langSelector"></div>
+        <div style="margin-top:1.2rem">
+          <select class="input" id="translateRecipeSelect" style="max-width:280px;margin-bottom:.8rem">
+            <option value="">-- Selecione uma receita --</option>
+          </select>
+          <button class="btn btn-amber" onclick="translateRecipe()">🌐 Traduzir Receita</button>
+        </div>
+        <div id="translateResult" class="ai-result-box" style="display:none;margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- SUGGEST TAB -->
+    <div id="ai-tab-suggest" style="display:none" class="fade-in">
+      <div class="card">
+        <div class="section-label">IA sugere receitas do seu inventário</div>
+        <div style="margin-bottom:1rem;font-size:.85rem;color:var(--muted);font-weight:300">
+          Baseado nos seus <strong id="invCountAI">0</strong> ingredientes no inventário, a IA sugere o melhor prato agora.
+        </div>
+        <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem">
+          <select class="input" style="max-width:200px" id="preferenceSelect">
+            <option value="qualquer">Sem restrições</option>
+            <option value="vegetariano">Vegetariano</option>
+            <option value="vegano">Vegano</option>
+            <option value="sem gluten">Sem glúten</option>
+            <option value="low carb">Low carb</option>
+          </select>
+          <select class="input" style="max-width:180px" id="timeSelect">
+            <option value="30">Até 30 min</option>
+            <option value="60">Até 1 hora</option>
+            <option value="qualquer">Qualquer tempo</option>
+          </select>
+          <button class="btn btn-amber" onclick="suggestFromInventory()">✨ Sugerir com IA</button>
+        </div>
+        <div id="suggestResult" class="ai-result-box" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMUNIDADE ── -->
+  <div class="page" id="page-community">
+    <h2 class="page-title">Comunidade</h2>
+    <p class="page-sub">Compartilhe pratos, descubra criadores e ganhe recompensas</p>
+    <div class="grid-2" style="align-items:start">
+      <div>
+        <div class="section-label" style="margin-bottom:.8rem">Feed</div>
+        <div style="margin-bottom:1rem">
+          <button class="btn btn-sage" onclick="openPostModal()">📸 Compartilhar prato</button>
+        </div>
+        <div id="communityFeed"></div>
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:.8rem">Criadores em Destaque</div>
+        <div id="creatorsList"></div>
+        <div style="margin-top:1.5rem">
+          <div class="section-label" style="margin-bottom:.8rem">Preferências da Comunidade</div>
+          <div id="communityPrefs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAMIFICAÇÃO ── -->
+  <div class="page" id="page-gamification">
+    <h2 class="page-title">Conquistas & Progressão</h2>
+    <p class="page-sub">Evolua por técnicas dominadas, não só por pratos finalizados</p>
+    <div class="grid-2" style="align-items:start;margin-bottom:1.5rem">
+      <div class="card">
+        <div class="section-label">Seu Progresso</div>
+        <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem">
+          <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:white;box-shadow:0 4px 18px rgba(201,123,10,.35)" id="levelCircle">3</div>
+          <div>
+            <div style="font-weight:700;font-size:.95rem" id="levelNameEl">Chef Amador</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem" id="levelNextEl">160 XP para Sous Chef</div>
+            <div style="height:8px;background:rgba(59,74,44,.1);border-radius:100px;width:200px;overflow:hidden"><div class="xp-fill" id="globalXPBar" style="width:68%"></div></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;text-align:center">
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900" id="g-recipes">24</div><div style="font-size:.72rem;color:var(--muted)">Receitas</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900" id="g-streak">5</div><div style="font-size:.72rem;color:var(--muted)">Sequência</div></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900" id="g-xp">340</div><div style="font-size:.72rem;color:var(--muted)">XP Total</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-label">Missões da Semana</div>
+        <div id="weekMissions"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:1.2rem">
+      <div class="section-label" style="margin-bottom:.8rem">Técnicas Culinárias</div>
+      <div class="technique-grid" id="techniqueGrid"></div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-bottom:.8rem">Conquistas</div>
+      <div class="achievement-wall" id="achievementWall"></div>
+    </div>
+  </div>
+
+  <!-- ── PREMIUM ── -->
+  <div class="page" id="page-premium">
+    <div class="premium-hero">
+      <div class="premium-hero-title">⭐ Clube Premium</div>
+      <div style="color:rgba(255,255,255,.7);font-size:.95rem;font-weight:300;max-width:450px;position:relative">Desfrute da culinária sem anúncios, com receitas offline e recursos exclusivos.</div>
+      <div style="margin-top:1.2rem;position:relative;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div style="background:rgba(232,169,32,.15);border:1px solid rgba(232,169,32,.3);border-radius:12px;padding:.7rem 1.2rem;font-size:.85rem;color:var(--gold)">🎰 Usuários ativos ganham Premium grátis de 1–6 meses pela Roleta!</div>
+      </div>
+    </div>
+    <div class="premium-plan-grid">
+      <div class="premium-plan">
+        <div class="plan-name">Gratuito</div>
+        <div class="plan-price">R$0<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>Acesso a receitas públicas</li>
+          <li>Inventário básico (20 itens)</li>
+          <li>Comunidade de leitura</li>
+          <li>3 buscas IA por dia</li>
+          <li>Gamificação completa</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%">Plano atual</button>
+      </div>
+      <div class="premium-plan featured">
+        <div class="plan-name" style="color:var(--premium)">Premium</div>
+        <div class="plan-price">R$19,90<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>✨ Todas as funções do Gratuito</li>
+          <li>Receitas salvas <strong>offline</strong></li>
+          <li>Zero anúncios</li>
+          <li>Buscas IA ilimitadas</li>
+          <li>Inventário ilimitado</li>
+          <li>Criador de receitas com conquistas</li>
+          <li>Acesso antecipado a novidades</li>
+        </ul>
+        <button class="btn btn-amber" style="width:100%;font-size:.9rem">Assinar Premium</button>
+      </div>
+    </div>
+    <div style="margin-top:2rem">
+      <div class="section-label">🎰 Roleta de Engajamento Diário</div>
+      <div class="card" style="margin-top:.8rem">
+        <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap">
+          <div style="flex:1">
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem">Ganhe Premium gratuitamente!</div>
+            <p style="font-size:.88rem;color:var(--muted);line-height:1.65;font-weight:300">Usuários que utilizam o app diariamente e participam da comunidade entram num pool de recompensas com chance de ganhar de <strong>1 a 6 meses</strong> de Clube Premium gratuito. Quanto maior sua sequência, maior a chance!</p>
+            <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+              <span class="tag tag-amber">🔥 5 dias = chance aumentada</span>
+              <span class="tag tag-sage">👥 Participação na comunidade</span>
+              <span class="tag tag-gold">⭐ 30 dias = chance máxima</span>
+            </div>
+          </div>
+          <button class="daily-wheel-cta" onclick="openWheelModal()">🎰 Girar Agora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- .main -->
+</div><!-- .app -->
+
+<!-- ════ MODAIS ════ -->
+
+<!-- Roda da Sorte -->
+<div class="modal-overlay wheel-modal" id="wheelModal">
+  <div class="modal" style="max-width:480px;text-align:center">
+    <button class="modal-close" onclick="closeModal('wheelModal')">✕</button>
+    <div class="modal-title">🎰 Roleta Diária</div>
+    <div class="wheel-wrap">
+      <div class="wheel-outer">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="wheelCanvas" width="300" height="300" class="wheel-canvas"></canvas>
+      </div>
+      <div class="wheel-streak-info">
+        Sequência atual: <strong id="wheelStreakDisplay">5 dias</strong><br>
+        <span style="color:var(--amber)">Chance de ganhar: <strong id="wheelChance">35%</strong></span>
+      </div>
+      <div class="wheel-result" id="wheelResult">
+        <div style="font-size:2.5rem" id="wheelResultIcon">🎉</div>
+        <div class="wheel-result-prize" id="wheelResultPrize">Parabéns!</div>
+        <div class="wheel-result-desc" id="wheelResultDesc"></div>
+      </div>
+      <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">🎰 Girar!</button>
+    </div>
+  </div>
+</div>
+
+<!-- Criar Receita -->
+<div class="modal-overlay" id="recipeModal">
+  <div class="modal" style="max-width:600px">
+    <button class="modal-close" onclick="closeModal('recipeModal')">✕</button>
+    <div class="modal-title" id="recipeModalTitle">Nova Receita</div>
+    <div class="grid-2">
+      <div class="input-group">
+        <label class="input-label">Nome da Receita</label>
+        <input class="input" id="rm-name" placeholder="Ex: Risoto de Cogumelos">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Emoji</label>
+        <input class="input" id="rm-emoji" placeholder="🍝" maxlength="2">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="input-group">
+        <label class="input-label">Tempo (min)</label>
+        <input class="input" id="rm-time" type="number" placeholder="30">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Dificuldade</label>
+        <select class="input" id="rm-diff">
+          <option>Fácil</option><option>Médio</option><option>Difícil</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Categoria</label>
+      <select class="input" id="rm-cat">
+        <option>Almoço</option><option>Jantar</option><option>Café da manhã</option><option>Lanche</option><option>Sobremesa</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Ingredientes (um por linha: quantidade · nome)</label>
+      <textarea class="input" id="rm-ings" placeholder="180g · Peito de frango&#10;2 dentes · Alho&#10;30ml · Suco de limão"></textarea>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Modo de preparo (passos numerados)</label>
+      <textarea class="input" id="rm-steps" placeholder="1. Tempere o frango com sal e pimenta&#10;2. Aqueça o azeite na frigideira&#10;3. Doure o alho por 1 minuto"></textarea>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Notas e dicas</label>
+      <input class="input" id="rm-notes" placeholder="Dica do chef...">
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end;margin-top:.5rem">
+      <button class="btn btn-outline" onclick="closeModal('recipeModal')">Cancelar</button>
+      <button class="btn btn-sage" onclick="saveRecipe()" id="recipeModalSaveBtn">Salvar Receita</button>
+    </div>
+  </div>
+</div>
+
+<!-- Adicionar Inventário -->
+<div class="modal-overlay" id="invModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('invModal')">✕</button>
+    <div class="modal-title">Adicionar ao Inventário</div>
+    <div class="input-group">
+      <label class="input-label">Ingrediente</label>
+      <input class="input" id="inv-name" placeholder="Ex: Tomate">
+    </div>
+    <div class="grid-2">
+      <div class="input-group">
+        <label class="input-label">Quantidade</label>
+        <input class="input" id="inv-qty" placeholder="Ex: 500g">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Emoji</label>
+        <input class="input" id="inv-emoji" placeholder="🍅" maxlength="2">
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Vencimento</label>
+      <input class="input" id="inv-expiry" type="date">
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('invModal')">Cancelar</button>
+      <button class="btn btn-sage" onclick="saveInventoryItem()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post Comunidade -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="closeModal('postModal')">✕</button>
+    <div class="modal-title">Compartilhar prato</div>
+    <div class="input-group">
+      <label class="input-label">Receita feita</label>
+      <select class="input" id="post-recipe"></select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Comentário</label>
+      <textarea class="input" id="post-text" placeholder="Conte como ficou..."></textarea>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Avaliação</label>
+      <div style="display:flex;gap:.5rem" id="postStars">
+        <span style="font-size:1.6rem;cursor:pointer" onclick="setPostStar(1)">⭐</span>
+        <span style="font-size:1.6rem;cursor:pointer" onclick="setPostStar(2)">⭐</span>
+        <span style="font-size:1.6rem;cursor:pointer" onclick="setPostStar(3)">⭐</span>
+        <span style="font-size:1.6rem;cursor:pointer" onclick="setPostStar(4)">⭐</span>
+        <span style="font-size:1.6rem;cursor:pointer" onclick="setPostStar(5)">⭐</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('postModal')">Cancelar</button>
+      <button class="btn btn-sage" onclick="publishPost()">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Substituição de Ingrediente -->
+<div class="modal-overlay" id="subModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('subModal')">✕</button>
+    <div class="modal-title">Substituições para <span id="subIngName"></span></div>
+    <div id="subList" style="display:flex;flex-direction:column;gap:.7rem"></div>
+  </div>
+</div>
+
+<!-- Registo de Conta de Chef -->
+<div class="modal-overlay" id="cadastroModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('cadastroModal')">✕</button>
+    <div class="modal-title">🧑 Criar Conta de Chef</div>
+    <div class="input-group">
+      <label class="input-label">Nome Completo</label>
+      <input class="input" id="reg-nome" type="text" placeholder="Ex: Gordon Ramsay">
+    </div>
+    <div class="input-group">
+      <label class="input-label">E-mail</label>
+      <input class="input" id="reg-email" type="email" placeholder="chef@cozinhe.me">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Palavra-passe</label>
+      <input class="input" id="reg-senha" type="password" placeholder="Mínimo de 6 caracteres">
+    </div>
+    <div style="display:flex;gap:.8rem;justify-content:flex-end;margin-top:.5rem">
+      <button class="btn btn-outline" onclick="closeModal('cadastroModal')">Cancelar</button>
+      <button class="btn btn-sage" onclick="realizarCadastroNoPHP()">Criar Conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Stack -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="controller.js"></script>
+</body>
+</html>
