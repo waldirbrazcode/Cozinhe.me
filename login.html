@@ -451,6 +451,45 @@ select.input{cursor:pointer}
     animation: fadeUp 0.2s ease forwards;
   }
 
+  .info-btn {
+    background: rgba(59, 74, 44, 0.1);
+    color: #3B4A2C;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-family: serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .info-btn:hover {
+    background: #C97B0A;
+    color: #FDFAF5;
+  }
+
+  .help-tooltip {
+    position: absolute;
+    background: #16140F;
+    color: #FDFAF5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 260px;
+    z-index: 99999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    pointer-events: none; /* Evita que o mouse interfira no balao */
+  }
+
 /* ────────────────────────────────────────────────────
    RESPONSIVO
 ──────────────────────────────────────────────────── */
@@ -2341,8 +2380,91 @@ const helpTutorials = [
     tooltip.style.top = (btnCoordinates.top + scrollTopPosition - tooltip.offsetHeight - 8) + 'px';
   });
 
-  // Execução preventiva assim que o ficheiro inicial termina de processar
-  setTimeout(injectHelpButtons, 300);
+  const helpTutorials = [
+    { 
+      selector: '#page-recipes .page-title', 
+      text: 'Explore pratos sugeridos, filtre por categorias ou pesquise o que deseja cozinhar.' 
+    },
+    { 
+      selector: '#page-inventory .page-title', 
+      text: 'Gerencie sua despensa. O sistema avisa visualmente o estado de validade de cada ingrediente.' 
+    },
+    { 
+      selector: '#page-ai-prep .page-title', 
+      text: 'Ferramentas inteligentes para guiar preparos usando voz ativa, cronogramas ou transcricao de video.' 
+    },
+    { 
+      selector: '#page-gamification .page-title', 
+      text: 'Acompanhe a evolucao do seu perfil atraves da arvore de tecnicas e medalhas desbloqueadas.' 
+    },
+    { 
+      selector: '.portion-label', 
+      text: 'Use os botoes de mais (+) e menos (-) para recalcular as quantidades de ingredientes automaticamente.' 
+    },
+    { 
+      selector: '.wheel-modal .modal-title', 
+      text: 'Gire a roleta uma vez por dia para ganhar experiencia e recompensas.' 
+    }
+  ];
+
+  function injectHelpButtons() {
+    helpTutorials.forEach(item => {
+      // Procura todos os elementos que combinam com o seletor
+      const targets = document.querySelectorAll(item.selector);
+      
+      targets.forEach(target => {
+        // Se encontrou o elemento e ele ainda nao tem o botao "i"
+        if (target && !target.querySelector('.info-btn')) {
+          const btn = document.createElement('button');
+          btn.className = 'info-btn';
+          btn.setAttribute('data-help', item.text);
+          btn.textContent = 'i';
+          target.appendChild(btn);
+        }
+      });
+    });
+  }
+
+  // Cria um observador que fica monitorando o site. Se uma tela abrir, ele injeta os botoes na hora.
+  const observer = new MutationObserver(() => {
+    injectHelpButtons();
+  });
+  
+  // Inicia a observacao em todo o corpo do site
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+
+  // Logica de clique para mostrar os baloes
+  document.addEventListener('click', function(e) {
+    // Remove qualquer balao aberto
+    const openTooltip = document.querySelector('.help-tooltip');
+    if (openTooltip) {
+      openTooltip.remove();
+    }
+
+    // Checa se o clique foi no botao "i"
+    const clickedBtn = e.target.closest('.info-btn');
+    if (!clickedBtn) return;
+
+    e.stopPropagation();
+
+    // Cria o balao com o texto
+    const tooltipText = clickedBtn.getAttribute('data-help');
+    const tooltip = document.createElement('div');
+    tooltip.className = 'help-tooltip';
+    tooltip.textContent = tooltipText;
+    document.body.appendChild(tooltip);
+
+    // Posiciona exatamente acima do botao
+    const btnCoordinates = clickedBtn.getBoundingClientRect();
+    const scrollLeftPosition = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTopPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+    tooltip.style.left = (btnCoordinates.left + scrollLeftPosition - (tooltip.offsetWidth / 2) + (btnCoordinates.width / 2)) + 'px';
+    tooltip.style.top = (btnCoordinates.top + scrollTopPosition - tooltip.offsetHeight - 8) + 'px';
+  });
+
+  // Forca a primeira injecao de botoes
+  setTimeout(injectHelpButtons, 500);
 
 // Executa uma vez no inicio assim que a pagina carrega
 setTimeout(checkAndAddInfoButtons, 200);
