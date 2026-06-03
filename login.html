@@ -409,6 +409,48 @@ select.input{cursor:pointer}
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+<style>
+  /* Botão "i" discreto adaptado à paleta de cores do site */
+  .info-btn {
+    background: rgba(59, 74, 44, 0.08);
+    color: #3B4A2C;
+    border: none;
+    border-radius: 50%;
+    width: 19px;
+    height: 19px;
+    font-family: serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .info-btn:hover {
+    background: #C97B0A;
+    color: #FDFAF5;
+  }
+
+  /* Balão explicativo elegante e legível */
+  .help-tooltip {
+    position: absolute;
+    background: #16140F;
+    color: #FDFAF5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 260px;
+    z-index: 99999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    animation: fadeUp 0.2s ease forwards;
+  }
+
 /* ────────────────────────────────────────────────────
    RESPONSIVO
 ──────────────────────────────────────────────────── */
@@ -2213,6 +2255,94 @@ document.addEventListener('click', function(e) {
   tooltip.style.left = (rect.left + scrollLeft - (tooltip.offsetWidth / 2) + (rect.width / 2)) + 'px';
   tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 8) + 'px';
 });
+
+const helpTutorials = [
+    { 
+      selector: '.home-grid h2', 
+      text: 'Gire a roleta uma vez por dia para acumular pontos de experiencia e bónus simulados para a sua conta.' 
+    },
+    { 
+      selector: '.portion-control', 
+      text: 'Clique nos botões de mais (+) e menos (-) para atualizar automaticamente todas as quantidades de ingredientes de forma proporcional.' 
+    },
+    { 
+      selector: '#view-recipes h2.page-title', 
+      text: 'Explore pratos sugeridos, filtre por categorias ou pesquise diretamente o que deseja cozinhar.' 
+    },
+    { 
+      selector: '#view-inventory h2.page-title', 
+      text: 'Gerencie a sua despensa. O sistema avisa visualmente o estado de validade de cada ingrediente cadastrado.' 
+    },
+    { 
+      selector: '#view-ai h2.page-title', 
+      text: 'Interface de ferramentas inteligentes para guiar preparos usando voz ativa, cronogramas visuais ou transcrição de vídeo.' 
+    },
+    { 
+      selector: '#view-gamification h2.page-title', 
+      text: 'Acompanhe a evolução do seu perfil através da árvore de técnicas culinárias desenvolvidas e medalhas desbloqueadas.' 
+    }
+  ];
+
+  // Função que varre a página procurando onde encaixar os botões "i"
+  function injectHelpButtons() {
+    helpTutorials.forEach(item => {
+      const target = document.querySelector(item.selector);
+      // Insere apenas se o elemento estiver visível no ecrã e ainda não tiver o botão instalado
+      if (target && !target.querySelector('.info-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'info-btn';
+        btn.setAttribute('data-help', item.text);
+        btn.textContent = 'i';
+        
+        // Ajuste de posicionamento se for na barra de controlo de porções
+        if (item.selector === '.portion-control') {
+          target.appendChild(btn);
+        } else {
+          target.appendChild(btn);
+        }
+      }
+    });
+  }
+
+  // Monitoriza interações na página para atualizar os botões à medida que o utilizador muda de aba (SPA)
+  document.addEventListener('click', function(e) {
+    // Dá um pequeno tempo para o motor de renderização do site montar a nova aba antes de verificar
+    setTimeout(injectHelpButtons, 60);
+
+    // Remove qualquer balão explicativo aberto anteriormente ao clicar em qualquer lugar
+    const openTooltip = document.querySelector('.help-tooltip');
+    if (openTooltip) {
+      openTooltip.remove();
+    }
+
+    // Verifica se o clique foi especificamente em cima do botão "i"
+    const clickedBtn = e.target.closest('.info-btn');
+    if (!clickedBtn) return;
+
+    // Impede o fecho imediato provocado pelo clique no próprio botão
+    e.stopPropagation();
+
+    // Captura o texto guardado no elemento
+    const tooltipText = clickedBtn.getAttribute('data-help');
+
+    // Cria e configura o balão na estrutura da página
+    const tooltip = document.createElement('div');
+    tooltip.className = 'help-tooltip';
+    tooltip.textContent = tooltipText;
+    document.body.appendChild(tooltip);
+
+    // Calcula as coordenadas exatas na tela para flutuar o balão mesmo com rolagem de página
+    const btnCoordinates = clickedBtn.getBoundingClientRect();
+    const scrollLeftPosition = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTopPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Alinha horizontalmente ao centro e verticalmente por cima do botão "i"
+    tooltip.style.left = (btnCoordinates.left + scrollLeftPosition - (tooltip.offsetWidth / 2) + (btnCoordinates.width / 2)) + 'px';
+    tooltip.style.top = (btnCoordinates.top + scrollTopPosition - tooltip.offsetHeight - 8) + 'px';
+  });
+
+  // Execução preventiva assim que o ficheiro inicial termina de processar
+  setTimeout(injectHelpButtons, 300);
 
 // Executa uma vez no inicio assim que a pagina carrega
 setTimeout(checkAndAddInfoButtons, 200);
