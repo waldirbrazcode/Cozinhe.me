@@ -1,0 +1,41 @@
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="sidebar-logo" style="padding:0; border:none; margin-bottom: 2rem; text-align: center;">
+      <div class="logo-text" style="color:var(--dark); font-size: 2.2rem;">cozinhe<span>.</span>me</div>
+      <div class="logo-sub" style="color:var(--muted)">Culinária 3.0</div>
+    </div>
+
+    <div class="ai-prep-tabs" style="justify-content: center; margin-bottom: 2rem; border-bottom: none;">
+      <button class="ai-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="ai-tab" id="tabSignup" onclick="switchAuthTab('signup')">Criar Conta</button>
+    </div>
+
+    <div id="formLogin" class="fade-in">
+      <div class="input-group">
+        <label class="input-label">E-mail</label>
+        <input type="email" class="input" id="loginEmail" placeholder="chef@email.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Senha</label>
+        <input type="password" class="input" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="btn btn-sage" style="width: 100%; margin-top: 1rem; justify-content: center;" onclick="doLogin()">Entrar na Cozinha</button>
+    </div>
+
+    <div id="formSignup" class="fade-in" style="display: none;">
+      <div class="input-group">
+        <label class="input-label">Como quer ser chamado?</label>
+        <input type="text" class="input" id="signupName" placeholder="Ex: Chef Lucas">
+      </div>
+      <div class="input-group">
+        <label class="input-label">E-mail</label>
+        <input type="email" class="input" id="signupEmail" placeholder="seu@email.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Crie uma Senha</label>
+        <input type="password" class="input" id="signupPass" placeholder="Senha forte">
+      </div>
+      <button class="btn btn-amber" style="width: 100%; margin-top: 1rem; justify-content: center;" onclick="doSignup()">Criar Minha Conta</button>
+    </div>
+  </div>
+</div>
