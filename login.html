@@ -369,6 +369,46 @@ select.input{cursor:pointer}
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* Botao de informacao discreto */
+.info-btn {
+  background: rgba(59, 74, 44, 0.1);
+  color: #3B4A2C;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+.info-btn:hover {
+  background: #C97B0A;
+  color: #FDFAF5;
+}
+
+/* Balao explicativo (Tooltip) */
+.help-tooltip {
+  position: absolute;
+  background: #16140F;
+  color: #FDFAF5;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 250px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
 /* ────────────────────────────────────────────────────
    RESPONSIVO
 ──────────────────────────────────────────────────── */
@@ -2095,6 +2135,87 @@ renderGamePage();
 updateLevelUI();
 
 // Draw wheel on load
+/* ════════════════════════════════════════
+   SISTEMA DE AJUDA DINAMICA (BALOES DE INFO)
+   ════════════════════════════════════════ */
+
+// Função auxiliar para criar e injetar o botao "i" nos titulos
+function checkAndAddInfoButtons() {
+  // Configuração: mapeia seletores CSS existentes no site para as suas respectivas ajudas
+  const helpConfigs = [
+    { 
+      selector: '.home-grid h2', 
+      text: 'Gire a roleta uma vez por dia para acumular pontos de experiencia e recompensas ficticias para o seu perfil.' 
+    },
+    { 
+      selector: '.recipe-detail h2', 
+      text: 'Use os botoes de mais (+) e menos (-) para recalcular automaticamente a quantidade de cada ingrediente de acordo com as porcoes.' 
+    },
+    { 
+      selector: '#view-recipes h2', 
+      text: 'Navegue pelas receitas disponiveis ou use a barra de busca para encontrar pratos por nome ou ingredientes.' 
+    },
+    { 
+      selector: '#view-inventory h2', 
+      text: 'Monitore a validade dos seus alimentos. O sistema avisa visualmente quais itens estao proximos do vencimento.' 
+    },
+    { 
+      selector: '#view-ia h2', 
+      text: 'Aqui ficam as ferramentas de IA: conversao de video em passos, comandos de voz e organizacao do tempo de preparo.' 
+    }
+  ];
+
+  helpConfigs.forEach(config => {
+    const element = document.querySelector(config.selector);
+    // Se o elemento existe na tela atual e ainda nao tem o botao "i" grudado nele
+    if (element && !element.querySelector('.info-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'info-btn';
+      btn.setAttribute('data-help', config.text);
+      btn.textContent = 'i';
+      element.appendChild(btn);
+    }
+  });
+}
+
+// Escuta os cliques na pagina para exibir os baloes ou injetar os botoes ao trocar de tela
+document.addEventListener('click', function(e) {
+  // Se o usuario mudou de aba, espera um instante e injeta os botoes "i" na nova tela
+  setTimeout(checkAndAddInfoButtons, 50);
+
+  // Remove qualquer balao explicativo aberto anteriormente
+  const existingTooltip = document.querySelector('.help-tooltip');
+  if (existingTooltip) {
+    existingTooltip.remove();
+  }
+
+  // Verifica se o clique foi em um botao de informacao
+  const btn = e.target.closest('.info-btn');
+  if (!btn) return;
+
+  // Impede que o clique feche o proprio balao imediatamente
+  e.stopPropagation();
+
+  // Pega o texto explicativo guardado no atributo data-help
+  const text = btn.getAttribute('data-help');
+
+  // Cria o elemento do balao na tela
+  const tooltip = document.createElement('div');
+  tooltip.className = 'help-tooltip';
+  tooltip.textContent = text;
+  document.body.appendChild(tooltip);
+
+  // Calcula a posicao exata do botao para alinhar o balao acima dele
+  const rect = btn.getBoundingClientRect();
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+  tooltip.style.left = (rect.left + scrollLeft - (tooltip.offsetWidth / 2) + (rect.width / 2)) + 'px';
+  tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 8) + 'px';
+});
+
+// Executa uma vez no inicio assim que a pagina carrega
+setTimeout(checkAndAddInfoButtons, 200);
 setTimeout(()=>{ const c=document.getElementById('wheelCanvas'); if(c) drawWheel(); },100);
 </script>
 </body>
