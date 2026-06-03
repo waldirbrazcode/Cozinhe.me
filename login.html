@@ -329,6 +329,46 @@ select.input{cursor:pointer}
 .mise-progress-fill{height:100%;background:var(--sage);border-radius:100px;transition:width .4s}
 .mise-footer{padding:.6rem 1.2rem 1.2rem;display:flex;gap:.6rem;justify-content:center}
 
+/* Botao de informacao discreto */
+.info-btn {
+  background: rgba(59, 74, 44, 0.1);
+  color: #3B4A2C; /* Cor Olive do seu projeto */
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+.info-btn:hover {
+  background: #C97B0A; /* Cor Amber do seu projeto */
+  color: #FDFAF5;
+}
+
+/* Balao explicativo (Tooltip) */
+.help-tooltip {
+  position: absolute;
+  background: #16140F; /* Cor Dark do seu projeto */
+  color: #FDFAF5;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 250px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
 /* ────────────────────────────────────────────────────
    RESPONSIVO
 ──────────────────────────────────────────────────── */
@@ -846,6 +886,21 @@ select.input{cursor:pointer}
   </div>
 </div>
 
+<h2>
+  Roleta Diaria
+  <button class="info-btn" data-help="Gire a roleta uma vez por dia para acumular pontos de experiencia e recompensas ficticias para o seu perfil.">i</button>
+</h2>
+
+<h2>
+  Ingredientes
+  <button class="info-btn" data-help="Use os botoes de mais (+) e menos (-) para recalcular automaticamente a quantidade de cada ingrediente de acordo com as porcoes desejadas.">i</button>
+</h2>
+
+<h2>
+  Sua Despensa
+  <button class="info-btn" data-help="Adicione e monitore a validade dos seus alimentos. O sistema avisa visualmente quais itens estao proximos do vencimento.">i</button>
+</h2>
+
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
@@ -883,6 +938,46 @@ function switchAuthTab(tab) {
 
 // Inicializa a base de dados falsa pegando do localStorage
 let dbUsers = JSON.parse(localStorage.getItem('cozinhe_users')) || [];
+
+document.addEventListener('click', function(e) {
+  // Remove qualquer balao explicativo aberto anteriormente
+  const existingTooltip = document.querySelector('.help-tooltip');
+  if (existingTooltip) {
+    existingTooltip.remove();
+  }
+
+  // Verifica se o clique foi em um botao de informacao
+  const btn = e.target.closest('.info-btn');
+  if (!btn) return;
+
+  // Impede que o clique feche o proprio balao imediatamente
+  e.stopPropagation();
+
+  // Pega o texto explicativo guardado no atributo data-help
+  const text = btn.getAttribute('data-help');
+
+  // Cria o elemento do balao na tela
+  const tooltip = document.createElement('div');
+  tooltip.className = 'help-tooltip';
+  tooltip.textContent = text;
+  document.body.appendChild(tooltip);
+
+  // Calcula a posicao exata do botao para alinhar o balao acima dele
+  const rect = btn.getBoundingClientRect();
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+  tooltip.style.left = (rect.left + scrollLeft - (tooltip.offsetWidth / 2) + (rect.width / 2)) + 'px';
+  tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 8) + 'px';
+});
+
+// Fecha o balao se o usuario clicar em qualquer outra parte da pagina
+document.addEventListener('click', function() {
+  const existingTooltip = document.querySelector('.help-tooltip');
+  if (existingTooltip) {
+    existingTooltip.remove();
+  }
+});
 
 function doSignup() {
   const name = document.getElementById('signupName').value.trim();
